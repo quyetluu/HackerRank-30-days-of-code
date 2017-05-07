@@ -8,17 +8,34 @@ typedef struct {
     unsigned int number;
 } PHONEBOOK;
 
-void lookup(void *phonebook,  const char input[64],int n){
+
+
+void lookup(void *phonebook,  const char input[64],int size){
     PHONEBOOK *phoneBook = (PHONEBOOK *)phonebook;
-    for (int j = 0; j < n ; j++){
-        if (strcmp(input,phoneBook[j].name) == 0){
-            printf("%s=%d\n",phoneBook[j].name, phoneBook[j].number);
-			return;
+    int bottom= 0;
+    int mid;
+    int top = size - 1;
+
+    while(bottom <= top){
+        mid = (bottom + top)/2;
+        if (strcmp(phoneBook[mid].name, input) == 0){
+            printf("%s=%d\n",phoneBook[mid].name, phoneBook[mid].number);
+            return;
+        } else if (strcmp(phoneBook[mid].name, input) > 0){
+            top    = mid - 1;
+        } else if (strcmp(phoneBook[mid].name, input) < 0){
+            bottom = mid + 1;
         }
     }
     printf("Not found\n");
-    return;
-    
+}
+ 
+/* qsort struct comparision function */ 
+int struct_cmp(const void *a, const void *b) 
+{ 
+    PHONEBOOK *ia = (PHONEBOOK *)a;
+    PHONEBOOK *ib = ( PHONEBOOK *)b;
+    return strcmp(ia->name,ib->name);
 } 
 
 int main() {
@@ -31,9 +48,10 @@ int main() {
     for (int i = 0; i < n; i++){
         scanf("%s%d",&phoneBook[i].name, &phoneBook[i].number);
     }
+    qsort(phoneBook, n, sizeof(PHONEBOOK), struct_cmp);
+    
     for (int i = 0; i < n; i++){
         scanf("%s",&tmp);
-        unsigned int rtn = -1;
         lookup(phoneBook, &tmp,n);
     }
     return 0;
